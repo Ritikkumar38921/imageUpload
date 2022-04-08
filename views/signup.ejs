@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .wrapper{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width:60vw;
+            margin:0 auto;
+            background-color:rgb(0, 128, 255);
+
+        }
+
+        .header{
+            color:rgb(251, 247, 247);
+            font-weight: 600;
+        }
+
+        label{
+            font-size: 23px;
+            font-weight: 700;
+            display: block;
+            margin:7px;
+            color:rgb(219, 232, 253);
+        }
+       
+
+        input{
+            border-radius: 10px;
+            width:90%;
+            font-size: 22px;
+            padding-left: 10px;
+        }
+
+        input:focus{
+            outline: none;
+        }
+
+        #submit{
+            font-size: 20px;
+            background-color:darkblue;
+            color:white;
+            width:18vw;
+            padding:7px;
+            border-radius: 28px;
+            cursor: pointer;
+            margin:12px;
+        }
+
+        body{
+            background-color: aliceblue;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <h1>Sign Up</h1>
+        </div>
+        <div>
+            <form>
+                <label for="person">Name : </label>
+                <input type="text" id="person">
+                <label for="gmail">Email : </label>
+                <input type="email" id="gmail" placeholder="xyz@gmail.com">
+                <label for="password">Password</label>
+                <input type="password" id="Password" minlength="6">
+                <label for="confirm">Comfirm Password : </label>
+                <input type="password" id="confirm">
+                <div style="text-align:center;">
+                    <input type="submit" value="SignUp" id="submit">
+                </div>
+            </form>
+        </div>
+        <div>
+            <p>click here for <a href="/auth/SignIn">SignIn</a></p>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.min.js" integrity="sha512-bPh3uwgU5qEMipS/VOmRqynnMXGGSRv+72H/N260MQeXZIK4PG48401Bsby9Nq5P5fz7hy5UGNmC/W1Z51h2GQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        let form = document.querySelector('form');
+        form.addEventListener('submit',(e) => {
+            e.preventDefault();
+            let name = form.elements[0].value;
+            let email = form.elements[1].value;
+            let password = form.elements[2].value;
+            let confirmPassword = form.elements[3].value;
+
+            axios.post('/auth/signup',{name,email,password,confirmPassword})
+            .then((res)=>{window.location.href = '/'})
+            .catch((error) => { console.log('signup unsuccessfully');})
+            
+        })
+    </script>
+</body>
+</html>

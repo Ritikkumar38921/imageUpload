@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body{
+            background-color: rgb(241, 226, 255);
+        }
+
+        .fa {
+            font-size: 50px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .fa-thumbs-up{
+            color:rgb(203, 192, 192);
+        }
+
+        .score{
+            font-size: 20px;
+            user-select: none;
+            color:rgb(249, 243, 243);
+            width:22px;
+            padding: 2px;
+            border-radius: 30px;
+            background-color: rgb(7, 93, 241);
+        }
+
+        .wrapper{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color:rgb(25, 23, 23);
+            margin-bottom: 10vh;
+        }
+
+        .header{
+            color:red;
+            background-color: aliceblue;
+            margin:14px;
+        }
+
+        label{
+            font-size: 23px;
+            font-weight: 700;
+            display: block;
+            margin:7px;
+        }
+
+        .content{
+            display:block;
+
+        }
+
+        #file{
+            font-size: 20px;
+        }
+
+       .display{
+           display: flex;
+           justify-content: center;
+           flex-wrap: wrap;
+           align-items: center;
+           width:100%;
+           margin:0 auto;
+           overflow-x:scroll;
+       }
+
+       .display div{
+           position:relative;
+       }
+
+       .zoom{
+           transition: all 0.3s linear;
+           transform: scale(2,3);
+           z-index: 3;
+           opacity: 1;
+           width:90vw;
+           height:90vw; 
+       }
+
+       .display i{
+           position: absolute;
+           margin: 0 17px;
+       }
+
+       .like{
+        top:77%;
+        right: 12px;
+        left : 10px;
+       }
+
+       .dislike{
+        top:77%;
+        right: 12px;
+        left: 16px;
+       }
+
+       .score{
+           top:83%;
+           right:-1px;
+           text-align: center;
+       }
+
+       .delete{
+           top:5%;
+           right: 0;
+           font-size: 32px;
+           cursor: pointer;
+       }
+
+
+        form{
+            background-color: rgba(235, 145, 0, 0.668);
+            text-align: center;
+            width:50vw;
+            margin-bottom: 8vh;
+            border-radius: 5%;
+        }
+
+        
+
+        #submit{
+            font-size: 20px;
+            background-color:rgb(179, 25, 226);
+            color:rgb(249, 249, 249);
+            font-weight: 700;
+            width:18vw;
+            padding:7px;
+            border-radius: 28px;
+            cursor: pointer;
+            margin:7px;
+        }
+
+        .likecolor{
+            color:rgba(8, 8, 242, 0.944);
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <h1>Upload your favourite memories</h1>
+        </div> 
+            <form action="/upload" class="content" method='POST' enctype="multipart/form-data" >
+                <div>
+                    <label for="file">
+                        <img src="/cloud_backup.png" alt="image" width="200" style="cursor: pointer; width:110px;">
+                    </label>
+                        <input type="file" id="file" name="myfile">
+                </div>
+                <input type="submit" value="Upload" id="submit">
+            </form>
+        <div class="display"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.min.js" integrity="sha512-bPh3uwgU5qEMipS/VOmRqynnMXGGSRv+72H/N260MQeXZIK4PG48401Bsby9Nq5P5fz7hy5UGNmC/W1Z51h2GQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+
+        let inp = document.getElementById('file');
+        window.addEventListener("resize",function(){
+            if(window.innerWidth < 500){
+                inp.style.display = "none";
+            }else{
+                inp.style.display = "block";
+            }
+        })
+        let displayContainer = document.querySelector('.display');
+        
+        async function fetchdata(){
+            let response = await fetch('/images');
+            
+            let data = await response.json();
+            console.log(data);
+            displayContainer.innerHTML = '';
+            data.forEach(element => {
+                let ele = document.createElement('img');
+                let div = document.createElement('div');
+                let like = document.createElement('i');
+                let count = document.createElement('i');
+                let trash = document.createElement('i');
+                trash.className = 'fa fa-close delete';
+                trash.style.color = 'white';
+                trash.style.background = 'black';
+                trash.style.padding = '4px';
+                count.innerText = 0;
+                like.className = 'fa fa-thumbs-up like';
+                count.className = 'score';
+                ele.src = `/images/${element.filename}`;
+                ele.style.width = '260px';
+                ele.style.height = '260px';
+                ele.style.margin = "8px";
+                ele.style.borderRadius = "10px";
+                div.appendChild(ele);
+                div.appendChild(like);
+                div.appendChild(count);
+                div.appendChild(trash);
+                div.setAttribute('id',element._id);
+                displayContainer.appendChild(div);
+            });
+
+            let islike = document.querySelectorAll('i');
+
+            islike.forEach((like) => {
+                like.addEventListener('click',(e) => {
+                    e.target.style.transition = 'all 0.3s linear';
+                    e.target.classList.toggle('likecolor');
+                    if(e.target.classList.contains('like')){
+                        e.target.classList.remove('like');
+                        e.target.classList.add('dislike');
+                        let content = (e.target.nextElementSibling);
+                        let id = e.target.parentElement.getAttribute('id');
+                        axios.put(`/upload/${id}`)
+                            .then((response) => {
+                                console.log("like successfully");
+
+                                content.innerText = Number(content.innerText) + 1;
+                            }).catch((error) => {console.log("something went wrong at update");})
+
+                    }else if(e.target.classList.contains('dislike')){
+                        console.log(e.target);
+
+                        e.target.classList.remove('dislike');
+                        e.target.classList.add('like');
+                        let id = e.target.parentElement.getAttribute('id');
+                        let content = (e.target.nextElementSibling);
+
+                        if(Number(content.innerText) > 0){
+                            axios.put(`/upload/${id}`)
+                            .then((response) => {
+                                content.innerText = Number(content.innerText) - 1;
+                            }).catch((error) => {console.log("something went wrong at update");})
+                        }
+                    }else if(e.target.classList.contains('fa-close')){
+                        let id = e.target.parentElement.getAttribute('id');
+                        axios.delete(`/upload/${id}`)
+                        .then((response) => {console.log('post is deleted successfully');
+                        window.location.reload();
+                    }).catch((err) => {console.log(err);})
+                    }
+                })
+            })
+        }
+
+        fetchdata();
+
+    </script>
+
+</body>
+</html>

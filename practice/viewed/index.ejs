@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #btn{
+            color:red;
+            padding: 5px;
+            border-radius: 10px;
+            font-weight: 700;
+            background-color: aliceblue;
+        }
+
+        .display{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin:5px;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>upload images</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" id="file" name="file">
+        <label for="image">choose a image that you want to upload</label>
+        <input type="submit" id="btn" value="submit">
+    </form>
+    <div class="display"></div>
+    <!-- <img src="http:localhost:5000/uploads/" alt="image"> -->
+    <script>
+    let ref = document.querySelector('.display');
+        async function fetchdata(){
+            console.log("ritik");
+            let response = await fetch('/images');
+            let data = await response.json();
+            console.log(data);
+            ref.innerHTML = '';
+            data.forEach((item) => {
+                let element = document.createElement("img");
+                element.src = `/${item.filename}`;
+                element.style.width = '100px';
+                element.style.height = '100px';
+                ref.appendChild(element);
+            });
+        }
+
+        fetchdata();
+    </script>
+</body>
+</html>
